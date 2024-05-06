@@ -1,0 +1,52 @@
+@model IEnumerable<CartItem>
+@{
+    decimal total = 0;
+}
+
+<h2 class="mt-3"><i class="fas fa-list-ul"></i>Cart</h2>
+<div class="list-group">
+    <div class="titles">
+        <div class="row fw-bold ms-3">
+            <div class="col-1">ID</div>
+            <div class="col-4">Product Name</div>
+            <div class="col-1">QTY</div>
+            <div class="col-2">Unit Price</div>
+            <div class="col-2">Total</div>
+            <div class="col-1">Actions</div>
+        </div>
+    </div>
+
+    @foreach (CartItem c in Model)
+    {
+        total += c.Product.UnitPrice * c.Quantity;
+        <div class="list-group-item">
+            <div class="row ms-3">
+                <div class="col-1">@c.ProductId</div>
+                <div class="col-4">@c.Product.ProductName</div>
+                <div class="col-1">
+                    <form asp-action="UpdateQuantity" method="post">
+                        <input type="hidden" name="id" value="@c.CartItemId" />
+                        <input type="number" name="quantity" value="@c.Quantity" min="1" class="form-control" style="width: 70px; display: inline-block;" />
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </div>
+                <div class="col-2">@c.Product.UnitPrice.ToString("C2")</div>
+                <div class="col-2">@((c.Product.UnitPrice * c.Quantity).ToString("C2"))</div>
+                <div class="col-1">
+                    <form asp-action="Remove" asp-route-id="@c.CartItemId" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+
+    <hr />
+    <div class="row ms-3">
+        <div class="col-10 text-right"><strong>Total:</strong></div>
+        <div class="col-2"><strong>@total.ToString("C2")</strong></div>
+    </div>
+    <form asp-action="Checkout" asp-controller="Cart" method="post">
+        <button type="submit" class="btn btn-primary float-right m-3">Checkout</button>
+    </form>
+</div>
